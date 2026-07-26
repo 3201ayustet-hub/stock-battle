@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>資産ダッシュボード | 株価成長バトル</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dashboard-page compact-dashboard">
+  <header class="site-header">
+    <a class="brand" href="setup.html"><span class="brand-mark">↗</span><span>株価成長バトル</span></a>
+    <nav class="top-nav">
+      <a data-page="index.html" class="active">メイン</a>
+      <a data-page="input.html">終値入力</a>
+      <a href="setup.html">新規対戦</a>
+    </nav>
+  </header>
+
+  <main class="page-shell dashboard-shell">
+    <div id="notice" class="message notice hidden"></div>
+    <div id="error" class="message error hidden"></div>
+
+    <section id="missing-battle" class="panel empty-state hidden">
+      <h1>対戦が選択されていません</h1>
+      <p>新しい対戦を作成するか、共有URLから開いてください。</p>
+      <a class="primary button-link" href="setup.html">対戦を作成する</a>
+    </section>
+
+    <div id="dashboard" class="hidden dashboard-one-page">
+      <section class="dashboard-topbar">
+        <div>
+          <p class="eyebrow">PORTFOLIO DASHBOARD</p>
+          <h1 id="battle-title">資産ダッシュボード</h1>
+          <p id="battle-period" class="hero-sub"></p>
+        </div>
+        <div class="hero-actions">
+          <button id="copy-link" class="secondary">共有URL</button>
+          <a data-page="input.html" class="primary button-link">終値を入力</a>
+        </div>
+      </section>
+
+      <section class="asset-overview">
+        <article class="total-asset-card">
+          <p class="eyebrow light">TOTAL CURRENT ASSETS</p>
+          <div id="total-assets" class="total-asset-value">—</div>
+          <div class="total-asset-meta">
+            <span>開始時合計 <strong id="initial-total-assets">—</strong></span>
+            <span>損益 <strong id="total-profit">—</strong></span>
+            <span>合計成長率 <strong id="total-growth">—</strong></span>
+          </div>
+        </article>
+        <article class="dashboard-status panel">
+          <div><span>最新比較日</span><strong id="latest-date">未登録</strong></div>
+          <div><span>登録日数</span><strong id="price-days">0日</strong></div>
+          <div><span>参加者</span><strong>4人</strong></div>
+        </article>
+      </section>
+
+      <section class="dashboard-content-grid">
+        <div class="ranking-zone">
+          <div class="section-heading compact"><div><p class="eyebrow">ALL PORTFOLIOS</p><h2>資産ランキング</h2></div></div>
+          <div id="ranking-cards" class="portfolio-ranking-grid"></div>
+        </div>
+
+        <section class="panel chart-panel dashboard-chart-panel">
+          <div class="section-heading compact">
+            <div><p class="eyebrow">ASSET GROWTH</p><h2>資産成長率の推移</h2></div>
+            <span class="pill">開始時資産 = 0%</span>
+          </div>
+          <div id="empty-chart" class="empty-state"><p>終値を入力するとグラフが表示されます。</p></div>
+          <div class="chart-wrap dashboard-chart"><canvas id="growth-chart"></canvas></div>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script src="config.js"></script>
+  <script src="common.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>
