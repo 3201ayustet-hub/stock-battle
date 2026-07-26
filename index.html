@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="4人で日本株の成長率を競う、終値手入力型の共有アプリ">
+  <title>株価成長バトル Ver.1.0</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
+</head>
+<body>
+  <header class="app-header">
+    <a class="brand" href="./">株価成長バトル</a>
+    <nav id="main-nav" class="nav hidden" aria-label="メインメニュー">
+      <button data-view="dashboard">ランキング</button>
+      <button data-view="input">終値入力</button>
+      <button data-view="history">履歴</button>
+      <button id="copy-link-button">URLをコピー</button>
+    </nav>
+  </header>
+
+  <main class="container">
+    <div id="notice" class="notice hidden" role="status"></div>
+    <div id="error" class="error hidden" role="alert"></div>
+
+    <section id="setup-view" class="panel hidden">
+      <h1>初期設定が必要です</h1>
+      <p><code>config.js</code> にSupabaseのURLとPublishable keyを設定してください。</p>
+    </section>
+
+    <section id="create-view" class="panel hidden">
+      <div class="hero">
+        <p class="eyebrow">4人・1人1銘柄</p>
+        <h1>新しい株価バトルを作成</h1>
+        <p>参加者名と購入価格を登録すると、全員で使える共有URLが発行されます。</p>
+      </div>
+
+      <form id="create-form">
+        <div class="form-grid three">
+          <label>対戦名
+            <input name="battle_name" required maxlength="60" placeholder="例：2026年 夏の株価対決">
+          </label>
+          <label>開始日
+            <input name="start_date" type="date" required>
+          </label>
+          <label>終了日（任意）
+            <input name="end_date" type="date">
+          </label>
+        </div>
+
+        <h2>参加者と銘柄</h2>
+        <div id="player-fields" class="player-grid"></div>
+        <button class="primary" type="submit">対戦を作成する</button>
+      </form>
+    </section>
+
+    <section id="dashboard-view" class="hidden">
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">ランキング</p>
+          <h1 id="battle-title">株価成長バトル</h1>
+          <p id="battle-period" class="muted"></p>
+        </div>
+        <a class="button primary" href="#input">今日の終値を入力</a>
+      </div>
+
+      <div id="latest-date" class="status-line"></div>
+      <div id="ranking-cards" class="ranking-grid"></div>
+
+      <section class="panel chart-panel">
+        <div class="section-heading">
+          <div>
+            <h2>成長率の推移</h2>
+            <p class="muted">購入価格を0%として比較します。配当・手数料・税金は含みません。</p>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="growth-chart"></canvas></div>
+        <div id="empty-chart" class="empty hidden">終値を登録するとグラフが表示されます。</div>
+      </section>
+    </section>
+
+    <section id="input-view" class="panel hidden">
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">終値登録</p>
+          <h1>4銘柄の終値を入力</h1>
+          <p class="muted">同じ日付を登録すると、確認後に既存データを上書きします。</p>
+        </div>
+      </div>
+      <form id="price-form">
+        <label class="date-field">取引日
+          <input id="trade-date" name="trade_date" type="date" required>
+        </label>
+        <div id="price-fields" class="price-grid"></div>
+        <label>メモ（任意）
+          <textarea id="price-note" maxlength="200" rows="3" placeholder="例：終値は証券会社サイトで確認"></textarea>
+        </label>
+        <div class="form-actions">
+          <button class="primary" type="submit">4件まとめて保存</button>
+          <a class="button secondary" href="#dashboard">キャンセル</a>
+        </div>
+      </form>
+    </section>
+
+    <section id="history-view" class="hidden">
+      <div class="page-heading">
+        <div>
+          <p class="eyebrow">登録履歴</p>
+          <h1>終値の確認・修正</h1>
+          <p class="muted">修正と削除は全員が行えます。</p>
+        </div>
+        <button id="export-button" class="secondary">JSONバックアップ</button>
+      </div>
+      <div class="table-wrap panel">
+        <table>
+          <thead><tr><th>取引日</th><th>参加者</th><th>銘柄</th><th>終値</th><th>メモ</th><th>操作</th></tr></thead>
+          <tbody id="history-body"></tbody>
+        </table>
+        <div id="empty-history" class="empty hidden">終値の登録履歴はありません。</div>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="edit-dialog">
+    <form id="edit-form" method="dialog">
+      <h2>終値を修正</h2>
+      <input id="edit-price-id" type="hidden">
+      <label>取引日<input id="edit-date" type="date" required></label>
+      <label>終値<input id="edit-close" type="number" min="0.01" step="0.01" required></label>
+      <label>メモ<textarea id="edit-note" maxlength="200" rows="3"></textarea></label>
+      <div class="form-actions">
+        <button class="primary" value="save">保存</button>
+        <button class="secondary" value="cancel">キャンセル</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
