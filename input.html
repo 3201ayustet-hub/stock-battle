@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>終値入力 | 株価成長バトル</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="input-page">
+  <header class="site-header">
+    <a class="brand" href="setup.html"><span class="brand-mark">↗</span><span>株価成長バトル</span></a>
+    <nav class="top-nav">
+      <a data-page="index.html">メイン</a>
+      <a data-page="input.html" class="active">終値入力</a>
+      <a href="setup.html">新規対戦</a>
+    </nav>
+  </header>
+
+  <main class="page-shell">
+    <div id="notice" class="message notice hidden"></div>
+    <div id="error" class="message error hidden"></div>
+
+    <section id="missing-battle" class="panel empty-state hidden">
+      <h1>対戦が選択されていません</h1>
+      <p>共有URLから開くか、新しい対戦を作成してください。</p>
+      <a class="primary button-link" href="setup.html">対戦を作成する</a>
+    </section>
+
+    <div id="input-content" class="hidden">
+      <section class="page-heading input-heading">
+        <div><p class="eyebrow">DAILY CLOSE</p><h1>終値を入力</h1><p id="battle-label" class="muted"></p></div>
+        <a data-page="index.html" class="secondary button-link">メインへ戻る</a>
+      </section>
+
+      <section class="panel form-section">
+        <form id="price-form">
+          <div class="form-grid two compact-grid">
+            <label class="field">取引日<input id="trade-date" name="trade_date" type="date" required></label>
+            <label class="field">共通メモ（任意）<input id="price-note" name="note" maxlength="200" placeholder="例：決算発表日"></label>
+          </div>
+          <div id="price-fields" class="price-entry-grid"></div>
+          <button class="primary large full-button" type="submit">4銘柄の終値を保存</button>
+        </form>
+      </section>
+
+      <section class="section-block">
+        <div class="section-heading"><div><p class="eyebrow">HISTORY</p><h2>登録履歴</h2></div><button id="export-button" class="secondary">JSONバックアップ</button></div>
+        <div class="panel table-wrap">
+          <table>
+            <thead><tr><th>取引日</th><th>参加者</th><th>銘柄</th><th>終値</th><th>メモ</th><th></th></tr></thead>
+            <tbody id="history-body"></tbody>
+          </table>
+          <div id="empty-history" class="empty-state"><p>まだ終値は登録されていません。</p></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <dialog id="edit-dialog">
+    <form id="edit-form" method="dialog">
+      <h2>終値を修正</h2>
+      <input id="edit-price-id" type="hidden">
+      <label class="field">取引日<input id="edit-date" type="date" required></label>
+      <label class="field">終値<input id="edit-close" type="number" min="0.01" step="0.01" required></label>
+      <label class="field">メモ<textarea id="edit-note" maxlength="200"></textarea></label>
+      <div class="dialog-actions"><button class="secondary" value="cancel">キャンセル</button><button class="primary" value="save">保存</button></div>
+    </form>
+  </dialog>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+  <script src="common.js"></script>
+  <script src="input.js"></script>
+</body>
+</html>
